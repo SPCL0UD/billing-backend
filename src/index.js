@@ -5,13 +5,13 @@ import { google } from 'googleapis'
 import admin from 'firebase-admin'
 import { z } from 'zod'
 
-// Decodificar credenciales desde Base64
 const firebaseConfig = JSON.parse(
   Buffer.from(process.env.FIREBASE_SA_BASE64, 'base64').toString('utf8')
-)
-const playConfig = JSON.parse(
-  Buffer.from(process.env.PLAY_SA_BASE64, 'base64').toString('utf8')
-)
+);
+admin.initializeApp({
+  credential: admin.credential.cert(firebaseConfig)
+});
+
 
 // Inicializar Firebase Admin
 admin.initializeApp({
