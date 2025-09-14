@@ -5,18 +5,21 @@ import { google } from 'googleapis'
 import admin from 'firebase-admin'
 import { z } from 'zod'
 
+// Decodificar credenciales desde Base64
 const firebaseConfig = JSON.parse(
   Buffer.from(process.env.FIREBASE_SA_BASE64, 'base64').toString('utf8')
-);
-admin.initializeApp({
-  credential: admin.credential.cert(firebaseConfig)
-});
+)
+const playConfig = JSON.parse(
+  Buffer.from(process.env.PLAY_SA_BASE64, 'base64').toString('utf8')
+)
 
+// Inicializar Firebase Admin solo si no está inicializado
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(firebaseConfig)
+  })
+}
 
-// Inicializar Firebase Admin
-admin.initializeApp({
-  credential: admin.credential.cert(firebaseConfig)
-})
 const db = admin.firestore()
 
 // Inicializar Google Play API
@@ -119,5 +122,6 @@ const port = process.env.PORT || 8080
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`)
 })
+
 
 
