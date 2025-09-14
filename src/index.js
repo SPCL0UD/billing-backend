@@ -5,13 +5,31 @@ import { google } from 'googleapis'
 import admin from 'firebase-admin'
 import { z } from 'zod'
 
-// Decodificar credenciales desde Base64
-const firebaseConfig = JSON.parse(
-  Buffer.from(process.env.FIREBASE_SA_BASE64, 'base64').toString('utf8')
-)
-const playConfig = JSON.parse(
-  Buffer.from(process.env.PLAY_SA_BASE64, 'base64').toString('utf8')
-)
+// Función para leer credenciales desde Base64 o JSON plano
+function loadServiceAccount(envVar, varName) {
+  if (!envVar || envVar.trim() === '') {
+    throw new Error(`Variable de entorno ${varName} no está definida o está vacía`)
+  }
+
+  let decoded
+  try {
+    // Intentar decodificar como Base64
+    const base64Decoded = Buffer.from(envVar, 'base64').toString('utf8')
+    decoded = JSON.parse(base64Decoded)
+  } catch {
+    try {
+      // Si falla, intentar parsear como JSON plano
+      decoded = JSON.parse(envVar)
+    } catch (err) {
+      throw new Error(`Variable ${varName} no contiene un JSON válido ni Base64 válido: ${err.message}`)
+    }
+  }
+  return decoded
+}
+
+// Cargar credenciales
+const firebaseConfig = loadServiceAccount(process.env.FIREBASE_SA_BASE64 || process.env.FIREBASE_SA_JSON, 'FIREBASE_SA_BASE64/FIREBASE_SA_JSON')
+const playConfig = loadServiceAccount(process.env.PLAY_SA_BASE64 || process.env.PLAY_SA_JSON, 'PLAY_SA_BASE64/PLAY_SA_JSON')
 
 // Inicializar Firebase Admin solo si no está inicializado
 if (!admin.apps.length) {
