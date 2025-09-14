@@ -5,7 +5,7 @@ import { google } from 'googleapis'
 import admin from 'firebase-admin'
 import { z } from 'zod'
 
-// Decodificar credenciales desde variables de entorno Base64
+// Decodificar credenciales desde Base64
 const firebaseConfig = JSON.parse(
   Buffer.from(process.env.FIREBASE_SA_BASE64, 'base64').toString('utf8')
 )
@@ -119,4 +119,5 @@ const port = process.env.PORT || 8080
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`)
 })
+
 
