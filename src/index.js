@@ -5,21 +5,23 @@ import { google } from 'googleapis'
 import admin from 'firebase-admin'
 import { z } from 'zod'
 
+// Decodificar credenciales desde variables de entorno Base64
+const firebaseConfig = JSON.parse(
+  Buffer.from(process.env.FIREBASE_SA_BASE64, 'base64').toString('utf8')
+)
+const playConfig = JSON.parse(
+  Buffer.from(process.env.PLAY_SA_BASE64, 'base64').toString('utf8')
+)
+
 // Inicializar Firebase Admin
 admin.initializeApp({
-  credential: admin.credential.cert(
-    JSON.parse(
-      JSON.stringify(
-        await import(process.env.FIREBASE_SA, { assert: { type: 'json' } })
-      )
-    )
-  )
+  credential: admin.credential.cert(firebaseConfig)
 })
 const db = admin.firestore()
 
 // Inicializar Google Play API
 const auth = new google.auth.GoogleAuth({
-  keyFile: process.env.GOOGLE_PLAY_SA,
+  credentials: playConfig,
   scopes: ['https://www.googleapis.com/auth/androidpublisher']
 })
 const androidPublisher = google.androidpublisher({ version: 'v3', auth })
@@ -117,3 +119,4 @@ const port = process.env.PORT || 8080
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`)
 })
+
