@@ -1,0 +1,7 @@
+{
+  "userId": "user123",
+  "planId": "premium",
+  "method": "paypal",
+    "ok": true,
+  "link": "https://paypal.com/checkout?token=..."
+}
